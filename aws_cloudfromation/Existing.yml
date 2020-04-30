@@ -1,0 +1,37 @@
+Resources:
+    Ec2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+          SecurityGroups:
+            - !Ref InstanceSecurityGroup
+          KeyName: hello2
+          AvailabilityZone: us-east-1c
+          ImageId: ami-0e2ff28bfb72a4e45
+          InstanceType: t2.micro
+          IamInstanceProfile: CloudFormation
+          UserData: !Base64 |
+            #!/bin/bash
+            yum update -y
+            yum install httpd -y
+            service httpd start
+            chkconfig httpd on
+            cd /var/www/html
+            echo "<html><h1>Machine Launched in Virginia </h1></html>" > index.html
+    InstanceSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+          GroupDescription: Enable SSH access via port 22
+          SecurityGroupIngress:
+            - IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 0.0.0.0/0
+            - IpProtocol: tcp
+              FromPort: '80'
+              ToPort: '80'
+              CidrIp: 0.0.0.0/0
+            - IpProtocol: tcp
+              FromPort: '443'
+              ToPort: '443'
+              CidrIp: 0.0.0.0/0
+    
